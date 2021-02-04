@@ -1,0 +1,11 @@
+# idea
+.idea
+API.iml
+# spring boot
+BOOT-INF
+META-INF
+/org
+# ignore Target foler
+target
+# Mac
+.DS_Store
