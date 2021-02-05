@@ -41,3 +41,6 @@ jobs:
     
     - name: Run docker push
       run: docker push ${{ env.registry }}/${{ env.image_name }}:$GITHUB_SHA
+      
+    - name: Name of Image 
+      run: echo "${{ env.registry }}/${{ env.image_name }}:$GITHUB_SHA"
