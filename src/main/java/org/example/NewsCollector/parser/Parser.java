@@ -139,6 +139,9 @@ public class Parser {
 
                     counterArticelsInFeed ++;
                     Content content = new Content();
+                    content.setAverageRating(0.0);
+                    content.setCountRating(0L);
+                    content.setSumRating(0.0);
                     content.setCategory(category);
                     RssFeed rssFeed = rssFeedService.findByLinkRssFeed(url.toString());
                     content.setRssFeedId(rssFeed.getId());
