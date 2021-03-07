@@ -13,4 +13,5 @@ public interface PublisherRepository extends JpaRepository<Publisher,Long> {
 
     public Publisher findByLinkHomepage(String linkHomepage);
 
+
 }

@@ -25,4 +25,8 @@ public interface RssFeedService {
 
     public List<String> getAllCategories();
 
+    public Long getPublisherId(String linkRssFeed);
+
+    RssFeed findByLinkRssFeed(String url);
+
 }

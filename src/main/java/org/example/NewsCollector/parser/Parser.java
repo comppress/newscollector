@@ -10,6 +10,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.example.NewsCollector.controller.ContentController;
 import org.example.NewsCollector.model.Content;
+import org.example.NewsCollector.model.Publisher;
+import org.example.NewsCollector.model.RssFeed;
+import org.example.NewsCollector.repository.PublisherRepository;
 import org.example.NewsCollector.service.RssFeedService;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
@@ -40,6 +43,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,6 +57,9 @@ public class Parser {
     @Autowired
     RssFeedService rssFeedService;
 
+    @Autowired
+    PublisherRepository publisherRepository;
+
     public ArrayList<Content> runRssFeedParser(HashMap<String, String> mapLastChangeDate) {
 
 
@@ -61,7 +68,6 @@ public class Parser {
         // get Key value store for url and category
         HashMap<String,String> mapUrlCategory = rssFeedService.getAllUrlsWithCategory();
         ArrayList<Content> listNewsModel = new ArrayList<Content>();
-
 
         try {
             listNewsModel = listOfModelNews(mapLastChangeDate, mapUrlCategory);
@@ -134,8 +140,10 @@ public class Parser {
                     counterArticelsInFeed ++;
                     Content content = new Content();
                     content.setCategory(category);
-                    Long id = rssFeedService.getId(url.toString());
-                    content.setRssFeedId(id);
+                    RssFeed rssFeed = rssFeedService.findByLinkRssFeed(url.toString());
+                    content.setRssFeedId(rssFeed.getId());
+                    Optional<Publisher> publisher = publisherRepository.findById(rssFeed.getPublisherId());
+                    content.setSource(publisher.get().getNewsAgency());
                     listNewsModel.add(content);
 
                     Element eElement = (Element) nNode;
