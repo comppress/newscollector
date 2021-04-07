@@ -317,7 +317,12 @@ public class Parser {
                 HttpEntity entity = response.getEntity();
                 content = EntityUtils.toString(entity, "UTF-8");
 
-            } finally {
+            }catch (Exception e) {
+                // Exception needs to be catched otherwise the programm interrupts here
+                // Typo in URL String "url "
+                logger.error("Catch an Exception, probably url miss spelling");
+            }
+            finally {
 
                 if (request != null) {
 
