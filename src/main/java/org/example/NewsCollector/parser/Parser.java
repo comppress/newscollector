@@ -179,7 +179,8 @@ public class Parser {
 
                     String title = eElement.getElementsByTagName("title").item(0).getTextContent();
                     String unescapedHtmlTitle = StringEscapeUtils.unescapeHtml4(title);
-                    unescapedHtmlTitle.trim();
+                    unescapedHtmlTitle = unescapedHtmlTitle.replaceAll("[\n\r]", "");
+                    unescapedHtmlTitle = unescapedHtmlTitle.trim();
                     content.setTitle(unescapedHtmlTitle);
 
                     String img = "not implemented";
