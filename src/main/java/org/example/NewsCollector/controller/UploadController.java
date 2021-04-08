@@ -60,6 +60,31 @@ public class UploadController {
         return modelAndView;
     }
 
+    @RequestMapping("/uploadPublisherInformation")
+    public ModelAndView uploadPublisherInformation(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("uploadPublisherInformation");
+        return modelAndView;
+    }
+
+    @PostMapping("receivePublisherInformation")
+    public  @ResponseBody String receivePublisherInformation(@RequestParam("fileToUpload") final MultipartFile uploadingFile) throws IOException {
+
+        if(!uploadingFile.getOriginalFilename().endsWith(".csv")) {
+            logger.debug("Wrong file format, *.csv is expected");
+            return "wrong file format, should be *.csv";
+        }
+
+        if(uploadingFile == null || uploadingFile.isEmpty()) return "File is null or empty";
+
+        final Path tempDirWithPrefix = Files.createTempDirectory("json");
+        final File file = new File(tempDirWithPrefix.toFile(), uploadingFile.getOriginalFilename());
+        uploadingFile.transferTo(file);
+
+        //News Agency, Description ... Update or enter, then log what has been changed
+        
+        return "Lala";
+    }
     // utf 8 erste, zeile löschen, csv only format
     @PostMapping("receiveCSV")
     public  @ResponseBody String receiveXml(@RequestParam("fileToUpload") final MultipartFile uploadingFile) throws IOException {
