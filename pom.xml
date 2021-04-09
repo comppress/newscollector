@@ -102,23 +102,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-
-            <!-- https://www.baeldung.com/jib-dockerizing -->
-            <!-- Run 'mvn compile jib:build' to execute -->
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-                <version>2.7.1</version>
-                <configuration>
-                    <from>
-                        <image>openjdk:14-jdk-alpine</image>
-                    </from>
-                    <to>
-                        <image>registry.comppress.de/newscollector:${project.version}</image>
-                    </to>
-
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
