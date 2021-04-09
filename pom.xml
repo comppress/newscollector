@@ -11,7 +11,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.comppress</groupId>
-    <artifactId>NewsCollector</artifactId>
+    <artifactId>newscollector</artifactId>
 
     <version>1.0.0</version>
     <name>NewsCollector</name>
