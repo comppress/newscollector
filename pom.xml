@@ -4,33 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.6.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
-    <groupId>org.example</groupId>
+    <groupId>org.comppress</groupId>
     <artifactId>newscollector</artifactId>
 
-    <!-- Tag for the Docker Image here
-    Given a version number MAJOR.MINOR.PATCH, increment the:
-
-    MAJOR version when you make incompatible API changes,
-    MINOR version when you add functionality in a backwards compatible manner, and
-    PATCH version when you make backwards compatible bug fixes.
-    -->
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>NewsCollector</name>
     <packaging>jar</packaging>
-    <description>Demo project for Spring Boot</description>
-
-    <properties>
-        <docker.user>lucas</docker.user>
-        <docker.password>gmwmp6AWCcCtXTyx</docker.password>
-        <docker.url>registry.comppress.de</docker.url>
-        <start-class>org.example.NewsCollector.NewsCollectorApplication</start-class>
-    </properties>
 
     <dependencies>
         <dependency>
