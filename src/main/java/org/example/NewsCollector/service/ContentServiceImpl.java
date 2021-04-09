@@ -4,13 +4,11 @@ import org.example.NewsCollector.Information.Information;
 import org.example.NewsCollector.model.Content;
 import org.example.NewsCollector.repository.ContentRepository;
 import org.example.NewsCollector.repository.RatingRepository;
-import org.example.NewsCollector.repository.RssFeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,12 +74,12 @@ public class ContentServiceImpl implements ContentService{
 
     @Override
     public List<Content> getContentWithCategoryAndListLength(String category, Integer listLength) {
-        return contentRepository.nativeQueryCategory(category,listLength);
+        return contentRepository.selectContentOrderById(category,listLength);
     }
 
     @Override
     public List<Content> getContentWithCategoryAndListLengthSortedByDate(String category, Integer listLenght) {
-        return contentRepository.nativeQueryCategory3(category, listLenght);
+        return contentRepository.selectContentOrderByCreationDate(category, listLenght);
     }
 
     @Override
@@ -92,7 +90,7 @@ public class ContentServiceImpl implements ContentService{
 
     @Override
     public List<Long> findAllContentFromCategroy(String category) {
-        List<Content> contentList = contentRepository.nativeQueryCategory2(category);
+        List<Content> contentList = contentRepository.selectContentOrderById(category);
         List<Long> idList = new ArrayList<Long>();
         for(Content content: contentList){
             if(ratingRepository.existsByContentId(content.getId())) {

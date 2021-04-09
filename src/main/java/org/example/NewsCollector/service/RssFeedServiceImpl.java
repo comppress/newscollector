@@ -86,7 +86,7 @@ public class RssFeedServiceImpl implements RssFeedService{
 
     @Override
     public List<String> getAllCategories() {
-        return rssFeedRepository.dinstinctCategories();
+        return rssFeedRepository.distinctCategories();
     }
 
     @Override

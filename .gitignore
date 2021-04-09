@@ -1,6 +1,7 @@
 # idea
 .idea
 API.iml
+NewsCollector.iml
 # spring boot
 BOOT-INF
 META-INF

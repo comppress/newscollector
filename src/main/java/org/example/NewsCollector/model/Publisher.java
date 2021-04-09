@@ -5,8 +5,6 @@ import javax.persistence.*;
 @Entity
 public class Publisher {
 
-    public static final String TABLE_NAME= "ARTICLES";
-
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;

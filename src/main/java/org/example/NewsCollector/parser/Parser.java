@@ -8,7 +8,6 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.example.NewsCollector.controller.ContentController;
 import org.example.NewsCollector.model.Content;
 import org.example.NewsCollector.model.Publisher;
 import org.example.NewsCollector.model.RssFeed;
@@ -25,7 +24,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import java.io.IOException;
-import java.net.URI;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,21 +31,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URI;
-import java.net.URLConnection;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Component
 public class Parser {
@@ -92,13 +82,10 @@ public class Parser {
             int counterArticelsInFeed = 0;
 
             String rssFeedString = urlReader(url);
-            //String rssFeedString3 = urlReaderOld(url);
-            //String rssFeedString2 = urlReaderJsoupHttp(url);
 
             if(rssFeedString == null) continue;
 
             String category = mapUrlToCategory.get(url);
-
 
             // Convert string to input stream
             InputStream stream = new ByteArrayInputStream(rssFeedString.getBytes("UTF-8"));
@@ -122,11 +109,11 @@ public class Parser {
                 continue;
             }
 
-            if (!lastBuildDate.equals(mapLastBuildDate.get(url.toString()))) {
-                mapLastBuildDate.put(url.toString(), lastBuildDate);
+            if (!lastBuildDate.equals(mapLastBuildDate.get(url))) {
+                mapLastBuildDate.put(url, lastBuildDate);
             } else {
-                System.out.println("Skipping XML(" + url.toString() + ") because Map entry: "
-                        + mapLastBuildDate.get(url.toString()) + " equals " + lastBuildDate);
+                System.out.println("Skipping XML(" + url + ") because Map entry: "
+                        + mapLastBuildDate.get(url) + " equals " + lastBuildDate);
                 continue;
             }
 
@@ -143,7 +130,7 @@ public class Parser {
                     content.setCountRating(0L);
                     content.setSumRating(0.0);
                     content.setCategory(category);
-                    RssFeed rssFeed = rssFeedService.findByLinkRssFeed(url.toString());
+                    RssFeed rssFeed = rssFeedService.findByLinkRssFeed(url);
                     content.setRssFeedId(rssFeed.getId());
                     Optional<Publisher> publisher = publisherRepository.findById(rssFeed.getPublisherId());
                     content.setSource(publisher.get().getNewsAgency());
@@ -158,24 +145,6 @@ public class Parser {
                     }
 
                     content.setLink(link);
-                    //TODO
-                    /*
-                    String pubDate = eElement.getElementsByTagName("pubDate").item(0).getTextContent();
-                    // Example Values Fri, 17 Jul 2020 08:44:43 +0200, Fri, 17 Jul 2020 06:05:00 GMT, Fri, 17 Jul 2020 08:38:00 +0200
-                    // Maybe create class for different time patterns from different Newspapers
-                    // HH:mm:ss -> and for timezone check GMT and +0200
-                    DateTimeFormatter f = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
-                    LocalDateTime localDate = LocalDateTime.from(f.parse("January 13, 2012"));
-
-                    if (pubDate == null) {
-                        // 'YYYY-MM-DD hh:mm:ss' format
-                        String time = LocalDateTime.now().toString();
-                        pubDate = "todo";
-                    }
-
-                    content.setPubDate(pubDate);
-                    */
-
 
                     String title = eElement.getElementsByTagName("title").item(0).getTextContent();
                     String unescapedHtmlTitle = StringEscapeUtils.unescapeHtml4(title);
@@ -214,9 +183,6 @@ public class Parser {
                     }
 
                     content.setImageLink(img);
-                    // Get the value of the ID attribute.
-                    // String ID = node.getAttributes().getNamedItem("ID").getNodeValue();
-
                 }
             }
             logger.debug("Parsed " + counterArticelsInFeed + " articles from " + url);
@@ -270,31 +236,6 @@ public class Parser {
         }
     }
 
-    // https://zetcode.com/java/readwebpage/
-
-    //https://stackoverflow.com/questions/4328711/read-url-to-string-in-few-lines-of-java-code
-    private String urlReaderHttp(String url){
-
-        String out = new String();
-
-        try {
-            out = new Scanner(new URL(url).openStream(), "UTF-8").useDelimiter("\\A").next();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return out;
-    }
-
-    private String urlReaderJsoupHttp(String url) throws IOException {
-
-        HashMap<String,String> header = new HashMap<>();
-        String html = Jsoup.connect(url).header("Content-Type","text/plain;charset=UTF-8").get().html();
-
-        return html;
-    }
-
-
     // http://zetcode.com/java/readwebpage/
     private String urlReader(String sourceUrl) throws IOException {
 
@@ -313,16 +254,13 @@ public class Parser {
                 request = new HttpGet(url);
                 request.addHeader("Content-Type","text/plain;charset=UTF-8");
                 request.addHeader("User-Agent", "Apache HTTPClient");
-     //           request.addHeader("Accept-Encoding", "UTF-8");
                 HttpResponse response = client.execute(request);
 
                 HttpEntity entity = response.getEntity();
                 content = EntityUtils.toString(entity, "UTF-8");
 
             }catch (Exception e) {
-                // Exception needs to be catched otherwise the programm interrupts here
-                // Typo in URL String "url "
-                logger.error("Catch an Exception, probably url miss spelling");
+                logger.error("Catch an Exception, most likely url miss spelling");
             }
             finally {
 
@@ -334,106 +272,5 @@ public class Parser {
 
             return content;
     }
-
-    @Deprecated
-    // source: https://www.techiedelight.com/read-contents-of-url-into-string-java/
-    private String urlReaderOld(String sourceUrl) throws IOException {
-
-        if(sourceUrl.startsWith("http:")){
-            // http://zetcode.com/java/readwebpage/
-            String webPage = sourceUrl;
-            String html = Jsoup.connect(webPage).get().html();
-            return html;
-        }
-
-        URL url = null;
-
-        try {
-            url = new URL(sourceUrl);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        String line;
-
-        InputStream in = null;
-        try {
-            in = url.openStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            //String s = reader.readLine();
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append(System.lineSeparator());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        return sb.toString();
-    }
-
-
-    public ArrayList<URL> parseUrlFromXml(String pathXMLFile) {
-
-        ArrayList<URL> listUrls = new ArrayList<URL>();
-
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder builder = factory.newDocumentBuilder();
-
-            URL u = Parser.class.getClassLoader().getResource("mediaUrls.xml");
-
-            String s = u.toString();
-            // ugly hack need to change this
-            // s = s.replace("file:","");
-            // System.out.println(s);
-            // "/Users/lucasstocksmeier/Spielwiese/parser/target/mediaUrls.xml"
-            Document doc = builder.parse(s);
-            NodeList itemList = doc.getElementsByTagName("url");
-
-            for (int i = 0; i < itemList.getLength(); i++) {
-                Node p = itemList.item(i);
-
-                if (p.getNodeType() == Node.ELEMENT_NODE) {
-                    Element elem = (Element) p;
-
-                    if (elem.getTagName() == "url") {
-                        URL url = new URL(elem.getTextContent());
-                        listUrls.add(url);
-
-                    }
-                }
-            }
-
-        } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SAXException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        return listUrls;
-    }
-
-
 
 }

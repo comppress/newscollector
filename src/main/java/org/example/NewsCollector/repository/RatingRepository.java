@@ -12,10 +12,6 @@ public interface RatingRepository extends JpaRepository<Rating,Long> {
 
     public boolean existsByContentId(Long contentId);
 
-    public boolean existsByPersonIdAndContentId(Long personId, Long contentId);
-
-    Rating findByPersonIdAndContentId(Long personId, Long contentId);
-
     List<Rating> findByContentId(Long contentId);
 
 }

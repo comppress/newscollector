@@ -60,33 +60,7 @@ public class UploadController {
         return modelAndView;
     }
 
-    @RequestMapping("/uploadPublisherInformation")
-    public ModelAndView uploadPublisherInformation(){
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("uploadPublisherInformation");
-        return modelAndView;
-    }
-
-    @PostMapping("receivePublisherInformation")
-    public  @ResponseBody String receivePublisherInformation(@RequestParam("fileToUpload") final MultipartFile uploadingFile) throws IOException {
-
-        if(!uploadingFile.getOriginalFilename().endsWith(".csv")) {
-            logger.debug("Wrong file format, *.csv is expected");
-            return "wrong file format, should be *.csv";
-        }
-
-        if(uploadingFile == null || uploadingFile.isEmpty()) return "File is null or empty";
-
-        final Path tempDirWithPrefix = Files.createTempDirectory("json");
-        final File file = new File(tempDirWithPrefix.toFile(), uploadingFile.getOriginalFilename());
-        uploadingFile.transferTo(file);
-
-        //News Agency, Description ... Update or enter, then log what has been changed
-        
-        return "Lala";
-    }
-    // utf 8 erste, zeile löschen, csv only format
-    @PostMapping("receiveCSV")
+    @PostMapping("/receiveCSV")
     public  @ResponseBody String receiveXml(@RequestParam("fileToUpload") final MultipartFile uploadingFile) throws IOException {
 
         if(!uploadingFile.getOriginalFilename().endsWith(".csv")) {
@@ -99,8 +73,7 @@ public class UploadController {
         uploadingFile.transferTo(file);
 
         String line = "";
-        String cvsSplitBy = ";";
-        String cvsSplitBy2 = "\";\"";
+
         List<FeedPojo> feedPojoList = new ArrayList<FeedPojo>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -109,9 +82,7 @@ public class UploadController {
 
                 // use comma as separator
                 String [] feeds = line.split(";(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-                if(feeds.length <= 1){
-                    String test = "";
-                }
+
                 for(int i = 0; i < feeds.length; i++){
                     //Cut of first and last char
                     feeds[i] = feeds[i].substring(1);
@@ -140,12 +111,7 @@ public class UploadController {
             boolean deleteFeed = true;
 
             for(FeedPojo feedPojo:feedPojoList){
-                /*
-                System.out.println(feedPojo.getCategory());
-                System.out.println(rssFeed.getCategory());
-                System.out.println(feedPojo.getRssFeedLink());
-                System.out.println(rssFeed.getLinkRssFeed());
-                */
+
                 if(feedPojo.getCategory().equals(rssFeed.getCategory()) && feedPojo.getRssFeedLink().equals(rssFeed.getLinkRssFeed())){
                     logger.debug("feed match");
                     logger.debug(feedPojo.getCategory() + " == " + rssFeed.getCategory() + " && " + feedPojo.getRssFeedLink() + " == " + rssFeed.getLinkRssFeed());
@@ -171,14 +137,12 @@ public class UploadController {
 
                 rssFeedRepository.delete(rssFeed);
 
-                // Delete ALl Content from Feed
-                    // Delete Ratings? Or ignore
             }
         }
         rssFeedRepository.flush();
         logger.info(countDeleteFeeds + " Feeds deleted");
-        //Add Part
 
+        //Add Part
         int countAddFeeds = 0;
 
         for(FeedPojo feedPojo:feedPojoList){
