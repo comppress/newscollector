@@ -13,7 +13,7 @@
     <groupId>org.comppress</groupId>
     <artifactId>newscollector</artifactId>
     <version>1.0.0</version>
-    <name>NewsCollector</name>
+    <name>newscollector</name>
     <packaging>jar</packaging>
 
     <properties>
