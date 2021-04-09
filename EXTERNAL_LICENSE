@@ -14,9 +14,9 @@ Date: Mar 21, 2012
 Author: Yidong Fang
 
 Library: spring-boot-starter-data-jpa
-License: 
-Date: 
-Author: 
+License: Apache License, Version 2.0
+Date: -
+Author: Authors Spring Boot Starter Data JPA 
 
 Library: spring-boot-starter-security
 License: Apache 2.0
